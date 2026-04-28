@@ -83,24 +83,32 @@ function step(s, [b, c]) {
 // ---------------------------------------------------------------------------
 
 const els = {
-  board:        document.getElementById("board"),
-  status:       document.getElementById("status"),
-  model:        document.getElementById("model"),
-  playAs:       document.getElementById("play-as"),
-  sims:         document.getElementById("sims"),
-  simsVal:      document.getElementById("sims-val"),
-  showHeatmap:  document.getElementById("show-heatmap"),
-  newGame:      document.getElementById("new-game"),
-  topMoves:     document.getElementById("top-moves"),
-  valueNum:     document.getElementById("value-num"),
-  valueFill:    document.getElementById("value-fill"),
-  elapsed:      document.getElementById("elapsed"),
+  board:          document.getElementById("board"),
+  status:         document.getElementById("status"),
+  model:          document.getElementById("model"),
+  playAs:         document.getElementById("play-as"),
+  difficulty:     document.getElementById("difficulty"),
+  showHeatmap:    document.getElementById("show-heatmap"),
+  newGame:        document.getElementById("new-game"),
+  topMoves:       document.getElementById("top-moves"),
+  valueNum:       document.getElementById("value-num"),
+  valueFill:      document.getElementById("value-fill"),
+  elapsed:        document.getElementById("elapsed"),
 };
+
+// AlphaGumbel simulation budgets, tuned for CPU-only deployment (e.g.
+// Coolify arm64). Each sim is ~one CNN forward pass on a c128b3 backbone.
+const GUMBEL_SIMS = { easy: 32, medium: 64, hard: 128 };
 
 let state = initialState();
 let humanSide = 0;            // 0 = X, 1 = O
+let difficulty = "medium";    // "easy" | "medium" | "hard"
 let lastPolicy = null;        // 9x9 visit-share from the most recent AI move
 let busy = false;             // disable input while AI is thinking
+
+function currentSims() {
+  return GUMBEL_SIMS[difficulty];
+}
 
 const CELL_LAYOUT = [
   // Within one sub-board, cell index 0..8 maps to (row, col) row-major.
@@ -240,7 +248,7 @@ async function aiMove() {
       active_board: state.active_board,
     },
     model_id: els.model.value,
-    num_simulations: parseInt(els.sims.value, 10),
+    num_simulations: currentSims(),
   };
 
   try {
@@ -319,46 +327,32 @@ async function loadModels() {
     opt.disabled = true;
     els.model.appendChild(opt);
     els.newGame.disabled = true;
-    showError("No models loaded — check models/{cnn,transformer,ppo}/*.pt and the server log.");
+    showError("AlphaGumbel checkpoint not loaded — check the server log.");
     return;
   }
 
-  // Group by kind for a friendlier dropdown.
-  const groups = {
-    az_cnn:         "AlphaZero CNN",
-    az_transformer: "AlphaZero Transformer",
-    ppo:            "PPO",
-  };
-  const buckets = {};
+  // Single-kind deployment — flat list, no optgroups needed.
   for (const m of data.models) {
     modelsById[m.id] = m;
-    (buckets[m.kind] ||= []).push(m);
+    const opt = document.createElement("option");
+    opt.value = m.id;
+    opt.textContent = m.label.replace(/^AlphaGumbel — /, "");
+    els.model.appendChild(opt);
   }
-  for (const [kind, label] of Object.entries(groups)) {
-    if (!buckets[kind]) continue;
-    const og = document.createElement("optgroup");
-    og.label = label;
-    for (const m of buckets[kind]) {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      // Strip the kind prefix from the display since optgroup already shows it.
-      opt.textContent = m.label.replace(/^AlphaZero CNN — |^AlphaZero Transformer — |^PPO — /, "");
-      og.appendChild(opt);
-    }
-    els.model.appendChild(og);
+
+  // Single-model deployment: hide the picker entirely so the UI doesn't
+  // expose an interaction with no choices.
+  if (data.models.length <= 1) {
+    const row = els.model.closest(".panel-row");
+    if (row) row.style.display = "none";
   }
-  syncSimsState();
 }
 
-function syncSimsState() {
-  const m = modelsById[els.model.value];
-  const usesSims = m ? m.uses_simulations : true;
-  els.sims.disabled = !usesSims;
-  els.sims.parentElement.style.opacity = usesSims ? "1" : "0.45";
-  if (!usesSims) {
-    els.simsVal.textContent = "n/a (raw policy)";
-  } else {
-    els.simsVal.textContent = els.sims.value;
+function setDifficulty(level) {
+  if (!(level in GUMBEL_SIMS)) return;
+  difficulty = level;
+  for (const b of els.difficulty.querySelectorAll("button")) {
+    b.classList.toggle("active", b.dataset.level === level);
   }
 }
 
@@ -384,14 +378,17 @@ async function newGame() {
 
 function init() {
   buildBoard();
-  els.sims.addEventListener("input", syncSimsState);
   els.showHeatmap.addEventListener("change", render);
   els.newGame.addEventListener("click", newGame);
-  els.model.addEventListener("change", syncSimsState);
   els.playAs.addEventListener("click", (ev) => {
     const b = ev.target.closest("button");
     if (!b) return;
     setSide(b.dataset.side);
+  });
+  els.difficulty.addEventListener("click", (ev) => {
+    const b = ev.target.closest("button");
+    if (!b) return;
+    setDifficulty(b.dataset.level);
   });
   loadModels().then(() => { newGame(); });
 }

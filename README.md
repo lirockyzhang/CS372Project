@@ -14,12 +14,15 @@ Install (full instructions in `SETUP.md`):
 uv sync
 ```
 ### Interactive Game Play
-For interactive human-vs-AI play, the FastAPI web UI in `src/web/` serves a browser-based UTTT board against any AlphaZero checkpoint:
+For interactive human-vs-AI play, an online version can be found [here](https://uttt.lzhang.dev).
+
+You can also deploy a local version using the FastAPI web UI in `src/web/` serves a browser-based UTTT board against any AlphaZero checkpoint:
 
 ```bash
 uv run uvicorn web.server:app --reload --app-dir src
 # then open http://localhost:8000/
 ```
+
 ### Reproduce Experiment
 The experimental pipeline runs in four stages. Each stage points to a writeup in `docs/` with the exact commands, hyperparameters, and tables.
 

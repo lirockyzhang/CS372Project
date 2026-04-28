@@ -132,6 +132,11 @@ class AlphaGumbelMCTS:
         self.c_visit = c_visit
         self.c_scale = c_scale
 
+        # Root of the most recent ``search()`` call. Exposed for inspection
+        # tools (e.g. the web UI's per-move Q readout); not part of the
+        # training-loop contract.
+        self._last_root: _Node | None = None
+
         self.network.eval()
 
     # ------------------------------------------------------------------
@@ -232,6 +237,8 @@ class AlphaGumbelMCTS:
 
         if (not np.isfinite(improved_policy).all()) or improved_policy.sum() <= 0:
             improved_policy = visit_policy.copy()
+
+        self._last_root = root
 
         return SearchOutput(
             action=best_action,

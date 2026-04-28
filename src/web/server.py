@@ -15,6 +15,7 @@ Models are auto-discovered from three subdirectories under ``models/``:
 
 from __future__ import annotations
 
+import os
 import sys
 import time
 from pathlib import Path
@@ -32,6 +33,7 @@ _SRC = Path(__file__).resolve().parent.parent
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from agents.alphagumbel.mcts import AlphaGumbelMCTS  # noqa: E402
 from agents.alphazero.mcts import AlphaZeroMCTS  # noqa: E402
 from agents.alphazero.transformer import AlphaZeroTransformerNet  # noqa: E402
 from agents.common.network import AlphaZeroNet, masked_softmax  # noqa: E402
@@ -108,7 +110,7 @@ class MoveResponse(BaseModel):
     value: float
     top_moves: list[TopMove]
     elapsed_ms: int
-    kind: str  # "az_cnn" | "az_transformer" | "ppo"
+    kind: str  # "az_cnn" | "az_transformer" | "az_gumbel" | "ppo"
 
 
 class ModelInfo(BaseModel):
@@ -239,6 +241,64 @@ class AlphaZeroAdapter:
 
         return _AdapterResult(
             action=(int(best_action[0]), int(best_action[1])),
+            policy=policy,
+            value=value,
+            top_moves=top_moves,
+        )
+
+
+class AlphaGumbelAdapter:
+    """Wraps an AlphaGumbelMCTS so the visit_policy is exposed as the move
+    heatmap and top_moves carry per-move Q from the search root.
+    """
+
+    kind = "az_gumbel"
+    uses_simulations = True
+
+    def __init__(self, mcts: AlphaGumbelMCTS, label: str) -> None:
+        self.mcts = mcts
+        self.label = label
+
+    def play(self, state: UTTTState, num_simulations: int) -> _AdapterResult:
+        prev = self.mcts.num_simulations
+        self.mcts.num_simulations = num_simulations
+        try:
+            out = self.mcts.search(state, add_gumbel_noise=False)
+        finally:
+            self.mcts.num_simulations = prev
+
+        root = self.mcts._last_root
+        if root is None or not root.children:
+            raise HTTPException(400, "agent produced no children for this state")
+
+        policy = out.visit_policy.astype(np.float32, copy=True)
+
+        # Q values come from the searched root children. Some Gumbel root
+        # candidates may be unvisited (sequential halving eliminates losers
+        # early); skip those and order by visit_policy mass.
+        children_by_action = {
+            child.action: child
+            for child in root.children
+            if child.action is not None
+        }
+        flat = policy.reshape(-1)
+        order = np.argsort(-flat)
+
+        top_moves: list[TopMove] = []
+        for idx in order:
+            if flat[idx] <= 0 or len(top_moves) >= 3:
+                break
+            b, c = divmod(int(idx), 9)
+            child = children_by_action.get((b, c))
+            q = float(child.q_value) if (child is not None and child.visits > 0) else 0.0
+            top_moves.append(TopMove(board=b, cell=c, visits=float(flat[idx]), q=q))
+
+        # Root has no parent: q_value is averaged from the opponent's POV.
+        # Negate once to report from the root mover's POV (matches AlphaZero).
+        value = -float(root.q_value) if root.visits else 0.0
+
+        return _AdapterResult(
+            action=(int(out.action[0]), int(out.action[1])),
             policy=policy,
             value=value,
             top_moves=top_moves,
@@ -410,6 +470,31 @@ def _load_az_transformer(path: Path, device: torch.device) -> AlphaZeroAdapter:
     return AlphaZeroAdapter(mcts, label=label, kind="az_transformer")
 
 
+def _load_az_gumbel(path: Path, device: torch.device) -> AlphaGumbelAdapter:
+    """Load a CNN backbone and wrap it with AlphaGumbelMCTS.
+
+    The Gumbel deployment uses the regularized CNN pretrain (or any
+    AlphaZero-CNN checkpoint with the same arch) — only the search algorithm
+    differs from ``_load_az_cnn``.
+    """
+    raw = torch.load(path, map_location=device, weights_only=False)
+    state, meta = _load_state_dict(raw)
+    cfg = meta.get("model_config", {}) if isinstance(meta, dict) else {}
+
+    if "channels" in cfg and "num_blocks" in cfg:
+        channels, num_blocks = cfg["channels"], cfg["num_blocks"]
+    else:
+        channels, num_blocks = _infer_cnn_dims(state)
+
+    net = AlphaZeroNet(channels=channels, num_blocks=num_blocks).to(device)
+    net.load_state_dict(state)
+    net.eval()
+
+    mcts = AlphaGumbelMCTS(net, num_simulations=64, device=device)
+    label = f"AlphaGumbel — {path.stem} (ch={channels}, blocks={num_blocks})"
+    return AlphaGumbelAdapter(mcts, label=label)
+
+
 def _load_ppo(path: Path, device: torch.device) -> PPOAdapter:
     raw = torch.load(path, map_location=device, weights_only=False)
     state, meta = _load_state_dict(raw)
@@ -440,8 +525,33 @@ _KIND_LOADERS = {
 }
 
 
+_DEFAULT_GUMBEL_CHECKPOINT = "models/cnn/cnn_c128b3_100k_reg_best.pt"
+
+
+def _build_gumbel_only_registry(device: torch.device) -> dict[str, Adapter]:
+    """Single-model deployment mode (e.g. Coolify): expose only AlphaGumbel.
+
+    Checkpoint path is taken from ``WEB_GUMBEL_CHECKPOINT`` (relative to repo
+    root or absolute), defaulting to the regularized CNN pretrain used in the
+    Gumbel-vs-PUCT benchmark. The registered model id is ``gumbel`` so the
+    frontend doesn't need to know the underlying filename.
+    """
+    rel = os.environ.get("WEB_GUMBEL_CHECKPOINT", _DEFAULT_GUMBEL_CHECKPOINT)
+    path = Path(rel)
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    if not path.is_file():
+        print(f"[web] WEB_MODE=alphagumbel but checkpoint not found: {path}", file=sys.stderr)
+        return {}
+    return {"gumbel": _load_az_gumbel(path, device)}
+
+
 def build_registry() -> dict[str, Adapter]:
     device = _detect_device()
+
+    if os.environ.get("WEB_MODE", "").lower() == "alphagumbel":
+        return _build_gumbel_only_registry(device)
+
     registry: dict[str, Adapter] = {}
     if not MODELS_ROOT.is_dir():
         return registry
