@@ -15,6 +15,10 @@ The setup isolates one variable: the search algorithm. Network, opening, determi
 | Hardware | NVIDIA RTX 4060 Laptop, CUDA |
 | Tool | `src/tournament/head_to_head.py --agents az-selfplay gumbel-selfplay` |
 
+![Gumbel vs PUCT — equal-sims and wall-clock-matched outcomes](figures/gumbel_vs_puct_hero.png)
+
+*Hero figure: Phase 1 (equal sims) on the left, Phase 2 (matched wall-clock) on the right. Gumbel wins both regimes on the same network weights.*
+
 ## Phase 1 — Equal sims per move
 
 Both sides receive the same simulation budget. The only difference is the selection rule (UCB-style PUCT vs Gumbel sampling + halving).
@@ -27,11 +31,23 @@ Both sides receive the same simulation budget. The only difference is the select
 
 **Per-match raw logs:** `runs/tournament_sims{64,128,256}/summary.csv` plus per-game CSV.
 
+![Per-move wall-clock scaling](figures/gumbel_ms_scaling.png)
+
+*Both algorithms scale linearly in sims (left, log-log). Gumbel pays a constant ~12-13× per-sim overhead from Gumbel-noise sampling and sequential halving (right) — consistent across all three budgets.*
+
+![Stacked W-D-L per matchup](figures/gumbel_match_outcomes.png)
+
+*Stacked win/draw/loss per match (PUCT in blue, draws grey, Gumbel in orange). Every Phase-1 match is a Gumbel landslide; Phase-2 cells visualize the narrower wall-clock-matched outcomes.*
+
 ### Findings
 
 1. **Gumbel decisively outplays PUCT at equal sim count** — 87.5–90 % win rate at every budget tested. With identical weights this is purely an algorithmic gap.
 2. **The win rate is flat across 64, 128, 256 sims.** Gumbel's edge isn't a low-sim phenomenon that closes as PUCT gets more search; it's a structural advantage that the network's policy/value heads play better into.
 3. **Gumbel costs ~12× more wall-time per move** at all three budgets. The constant ratio is consistent with both algorithms scaling linearly in sim count, with Gumbel paying a fixed bookkeeping overhead (Gumbel noise sampling + sequential-halving subroutines) per sim that doesn't amortize away.
+
+![Per-game ms/move distributions](figures/gumbel_per_game_msmove.png)
+
+*Per-game ms/move distribution from raw `*_per_game.csv` data — boxes show the IQR, dots are individual games. Note the ~12× scale gap between the left (PUCT, ~7-26 ms) and right (Gumbel, ~85-342 ms) panels. Distributions are tight; the slowdown is consistent game-to-game, not driven by a few outliers.*
 
 ### Why Gumbel wins at low sims with this network
 
@@ -62,6 +78,10 @@ The PUCT@1024 match is the cleanest wall-time comparison; the PUCT@768 match is 
 | Gumbel-Round 2|   64 | **12** | **3** | **5** | **67.5 %** | **13.5** |
 
 Per-game CSVs: `runs/tournament_walltime_match*/puct{768,1024}_vs_gumbel64.csv`.
+
+![Phase 2 — wall-clock-matched comparison](figures/gumbel_phase2_combined.png)
+
+*Both Phase-2 matches side by side. Left: win % per match. Right: per-side ms/move shows the PUCT@1024 cell is the cleanest wall-clock match (3% gap), with PUCT@768 included as a bracket where PUCT was 24% faster.*
 
 ### Findings
 

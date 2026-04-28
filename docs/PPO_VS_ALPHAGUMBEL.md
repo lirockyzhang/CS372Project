@@ -25,12 +25,23 @@ Eval settings: 30 games per checkpoint, agents at 64 sims/move, MCTS at 200 sims
 | **PPO**             | `ppo.pt` (final, iter 150)    | **16.7 %**           | 5.01 M           | 0.85 h          | **1220.4**       |
 | **AlphaZero-Gumbel**| `iter_002_accepted.pt`        | **16.7 %**           | 2.04 M           | 1.10 h          | **1220.4**       |
 
+![Elo trajectory vs cumulative NN forwards](figures/elo_vs_nn_forwards.png)
+
+*Same trajectory by cumulative NN forwards (hardware-independent). AZ-Gumbel reaches the same peak in ~2.04 M forwards vs PPO's ~5.01 M — roughly **2.5× more sample-efficient** because every gradient step uses search-improved targets.*
+
+![Elo trajectory vs cumulative wall-clock hours](figures/elo_vs_wall_clock.png)
+
+*Elo (anchored to MCTS@200 = 1500) plotted against training wall-clock. PPO reaches the same peak in ~0.85 h vs AZ-Gumbel's ~1.10 h — but only because PPO has no search overhead at training time.*
 ### Findings
 
 1. **Equivalent peak strength.** Both agents top out at the same win rate (5/30 games) vs the shared MCTS@200 opponent, giving an identical peak Elo of 1220.4. From the same supervised starting point, neither RL recipe significantly outperforms the other on this benchmark in the budget we ran.
 2. **AlphaZero-Gumbel is more sample-efficient.** It reaches its peak in ~2.0 M cumulative NN forwards vs PPO's ~5.0 M — roughly **2.5× fewer forward passes per unit of playing strength**. This matches the AlphaZero intuition that search improves the training targets, so each gradient step carries more information.
 3. **PPO is wall-clock cheaper.** PPO completes 150 iterations in ~51 min vs AlphaZero-Gumbel's ~66 min for 5 iterations, because PPO has no search overhead at training time (Gumbel runs 64 sims/move during self-play). On a per-NN-forward basis Gumbel is slower; on a per-iteration basis it does much more work.
 4. **Pretrain dominates.** Both warm-start and final checkpoints land in a tight band on this benchmark (6.7 % → 16.7 % win rate vs MCTS@200). Most of the playing strength comes from the supervised pretrain on the 100k MCTS dataset; the RL stage adds a relatively small delta in the budget we explored.
+
+![PPO training curves over 150 iterations](figures/ppo_training_curves.png)
+
+*PPO training trace: policy loss is small and noisy (clipped surrogate, normalized advantages), value loss decreases smoothly, entropy decays as the policy sharpens, and self-play X-side win rate climbs as the network finds an asymmetry it can exploit during 1-step rollouts.*
 
 ## Phase 2 — Acceptance gating and self-play dynamics
 
@@ -49,6 +60,14 @@ The two pipelines have very different "did it get better?" loops:
 1. **Self-play Elo can climb past a rejected iteration.** AlphaZero-Gumbel's internal self-play Elo column rises from 1484 (iter 1) to 1614 (iter 4), but iter 4 was rejected by the validation match against `iter_002_accepted` — that is, the network felt stronger in self-play but did not transfer to the gating opponent. This is consistent with self-play drift / overfitting to recent trajectories, and is exactly what the gate is there to filter.
 2. **PPO has no equivalent guard.** Without a gate, PPO accepts every update, so the 150-iter checkpoint is whatever the most recent gradient step produced. The fact that the *final* PPO checkpoint matches the *best* AZ-Gumbel checkpoint vs MCTS@200 suggests PPO did not catastrophically degrade, but a gated variant would be a fairer comparison and is a natural follow-up.
 
+![AZ-Gumbel acceptance gate per iter](figures/azgumbel_acceptance_gate.png)
+
+*Per-iteration acceptance bar — score against the previous best. Only iter 2 cleared the gate (green). The 0.45 threshold annotation is the doc-stated value; in practice the working bound landed higher between 0.55 and 0.68 on this run.*
+
+![AZ-Gumbel self-play dynamics](figures/azgumbel_selfplay_dynamics.png)
+
+*Internal self-play Elo (left) keeps climbing 1500 → 1614 even as iters 3-5 are rejected by the gate — i.e. self-play feels stronger but doesn't transfer to the gating opponent. Win-rate vs random (right) sits at 80-100% throughout, confirming the network never collapses.*
+
 ## Phase 3 — Direct head-to-head
 
 50 games, paired openings (each opening played from both sides), temperature-0 greedy moves on both sides, seed 42, 64 sims/move for the Gumbel agent, single RTX 4060 Laptop. Tool: `head_to_head.py --agents ppo gumbel-selfplay`.
@@ -61,6 +80,18 @@ Source CSVs: `runs/ppo_vs_gumbel/ppo_vs_gumbel-selfplay.csv` (per-game) + `runs/
 | Gumbel-SelfPlay (`iter_002_accepted.pt`, 64 sims) | 22 | 1 | 27 | 22.5 | 45.0 % | 93.50 |
 
 Wall time: **1.82 min** (50 games, ~0.46 g/s).
+
+![Phase 3 — direct head-to-head outcome](figures/ppoaz_head_to_head.png)
+
+*50-game match summary: PPO wins 27-1-22, scoring 55% vs Gumbel-SelfPlay's 45%. With 50 games the binomial 95% CI is ±~14 pp, so the gap is suggestive but not conclusive — the *direction* (PPO ≥ Gumbel-SelfPlay) is what's interesting.*
+
+![Per-game inference time](figures/ppoaz_msmove_distribution.png)
+
+*Per-game ms/move distribution from the 50-game match: PPO is tightly clustered at 1-2 ms while Gumbel-SelfPlay@64 sits at ~90-100 ms — about **57× slower per move** for Gumbel. Two log-scale orders of magnitude apart.*
+
+![Inference cost — PPO vs Gumbel-SelfPlay@64](figures/ppoaz_inference_speed.png)
+
+*Mean ms/move from the 50-game match: PPO at 1.63 ms, Gumbel at 93.5 ms — about 57× faster per move. Even if higher Gumbel sim budgets close the strength gap, the wall-clock gap dominates for interactive use.*
 
 ### Findings
 

@@ -46,7 +46,7 @@ The following files and folders are initially drafted by the LLM, then reviewed,
 - ``src/scripts``
 - ``src/web``
 
-The following files and folders are written solely by human and edited by LLM for syntax and formatting purposes.  
+The following files and folders are written by **human** and edited by LLM for syntax and formatting purposes.  
 - ``docs``
 - ``README.md``
 - ``SETUP.md``

@@ -55,6 +55,14 @@ The model architecture is fixed at the best configuration (see [Appendix A](#app
 `Gap` = val_value / train_value (overfit ratio on the value head).\
 `*_total` = combined policy+value loss as defined in §3.
 
+![Pretraining ablation — hero figure](figures/pretrain_ablation.png)
+
+*Two panels: (left) validation total loss over 30k training steps for all four cells; (right) train vs val value-head loss at the best-by-val step, with overfit ratio annotated above each pair. C3 (TX, reg off) shows the largest gap (~4×); C4 (TX, reg on) the smallest (~1.4×).*
+
+![Test_total per cell](figures/pretrain_test_total.png)
+
+*Held-out test_total per cell. The CNN cells are nearly tied; the Transformer-reg-off bar (C3) stands out as the only cell with a clearly worse test_total.*
+
 ### 4.2 Train/val gap on the value head (axis A × axis B)
 
 | | Reg off | Reg on |
@@ -78,6 +86,10 @@ The CNN advantage is significant when no regularization is imposed but shrinks b
 
 Thus, most of the advantages for CNN over the transformer come from the unregularized comparison was the transformer's uncorrected overfit, not an inherent architectural advantage on this task.
 
+![Per-cell training curves](figures/pretrain_curves_grid.png)
+
+*Per-cell train and val curves (log-scale loss). Solid lines are training, dashed are val; thick lines are value loss, thin grey lines are policy loss. The C3 panel (TX, reg off) shows the dramatic value-head overfit; the C4 panel (TX, reg on) is the only cell where train and val track each other closely.*
+
 ### 5.2 Main effect of Regularization
 
 Holding architecture fixed:
@@ -88,6 +100,10 @@ Holding architecture fixed:
 | Transformer | **−0.145  (≈10% of baseline)** |
 
 Regularization has essentially **no effect on the CNN** and a **clear effect on the Transformer**. This is an interaction effect, not a clean main effect.
+
+![Policy vs value loss split](figures/pretrain_loss_split.png)
+
+*Why the cells differ: val_policy_loss (left) sits at the ~2.0 noise floor for every cell — the dataset bounds policy loss regardless of architecture or regularization. val_value_loss (right) is what actually separates the cells, with the C3/C4 transformer pair showing the regularization swing.*
 
 ### 5.3 Interaction effect
 
@@ -100,6 +116,10 @@ The dominant finding is the **Architecture × Regularization interaction**:
 **Potential Explanation:** `AlphaZeroTransformerNet` has no BatchNorm and our prior runs used `dropout=0.0` everywhere. This leads to overfitting and is solved by adding regularization. The regularized run also kept improving longer (best step 29,500 vs 20,500).
 
 **Policy loss is invariant across all four cells**: (~2.00–2.03). Predicted: no regularizer can move the noise floor of MCTS visit-count labels at this sims budget. This is the dataset's intrinsic policy noise, not a property of any model.
+
+![Overfit ratio over training](figures/pretrain_overfit_progression.png)
+
+*val_value_loss / train_value_loss over training. C3 (TX, reg off) diverges sharply as training proceeds; C4 (TX, reg on) is the only Transformer trace that holds the gap close to 1×. Both CNN cells (solid + dashed blue) drift gently above 2× regardless of regularization.*
 
 ## 6. Limitations
 
@@ -202,6 +222,10 @@ A 1500-step hyperparameter tuning run over 4 configs per arch on the same train/
 
 Bigger + lower LR wins. The best config's val curve was still falling fast at step 1500 (2.05 → 1.97 → 1.88 → 1.79 → 1.73), so it has potential to improve for a longer run.
 
+![CNN hyperparameter tuning](figures/pretrain_hp_cnn.png)
+
+*CNN hyperparameter tuning. Bars are sorted by parameter count (annotated below each bar); the green-outlined bar is the chosen config (`channels=128, blocks=3, lr=5e-4`). Strict monotonic improvement with capacity, and the lower learning rate of the largest config gives the cleanest result.*
+
 ### Transformer grid
 
 | Config | Params | best val_total | test_total |
@@ -212,3 +236,7 @@ Bigger + lower LR wins. The best config's val curve was still falling fast at st
 | **`embed=192, d=4, h=6, lr=5e-4`** | **1,835,138** | **2.290** | **2.314** |
 
 All four configs land within **0.04 val_total of each other**. The transformer is not size-bound at this dataset. The lower LR (5e-4) is slightly better, but the curves were nearly flat at lr=1e-3. This shows that optimization was the bottleneck, regardless of the model capacity.
+
+![Transformer hyperparameter tuning](figures/pretrain_hp_transformer.png)
+
+*Transformer hyperparameter tuning. Bars are nearly flat across capacity (210k → 1.84M params) — only ~0.04 val_total spread. The chosen `embed=192, d=4, h=6, lr=5e-4` config is marginally best; the win comes from the lower LR, not from added capacity.*

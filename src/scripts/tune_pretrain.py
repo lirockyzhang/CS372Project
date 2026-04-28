@@ -1,4 +1,4 @@
-"""Hyperparameter sweep for AlphaZero-style pretraining (CNN + Transformer).
+"""Hyperparameter tuning for AlphaZero-style pretraining (CNN + Transformer).
 
 For each architecture this runs a small grid of configurations on the SAME
 train/val/test split, logs per-trial best val loss + final test loss to a
@@ -51,8 +51,8 @@ import torch.optim as optim
 from utils.runtime import default_run_dir, detect_device, set_seed
 from utils.training_logger import TrainingLogger
 
-# Reuse the building blocks from the single-config pretrainer so the sweep
-# trains the model the exact same way -- only HPs differ.
+# Reuse the building blocks from the single-config pretrainer so the tuning
+# run trains the model the exact same way -- only HPs differ.
 from scripts.pretrain_transformer import (
     build_network,
     eval_full_split,
@@ -62,7 +62,7 @@ from scripts.pretrain_transformer import (
 
 
 # ---------------------------------------------------------------------------
-# Hyperparameter grids -- edit these to broaden / narrow the sweep
+# Hyperparameter grids -- edit these to broaden / narrow the tuning run
 # ---------------------------------------------------------------------------
 
 # Each entry is the *delta* over the arch's default; missing keys keep
@@ -109,17 +109,17 @@ def make_trial_namespace(arch: str, config: dict[str, Any]) -> Namespace:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Hyperparameter sweep for pretrain_transformer.py",
+        description="Hyperparameter tuning for pretrain_transformer.py",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument("--dataset", type=str, required=True)
     p.add_argument("--run-dir", type=str, default=None,
-                   help="Sweep root. Defaults to runs/tune_<timestamp>")
+                   help="Tuning-run root. Defaults to runs/tune_<timestamp>")
     p.add_argument("--arch",    type=str, default="both",
                    choices=["both", "cnn", "transformer"])
 
     p.add_argument("--steps-per-trial", type=int, default=1_500,
-                   help="Training steps per trial (kept short for sweep speed)")
+                   help="Training steps per trial (kept short for tuning speed)")
     p.add_argument("--batch-size",      type=int, default=256)
     p.add_argument("--eval-every",      type=int, default=150)
     p.add_argument("--val-batches",     type=int, default=10)
@@ -133,7 +133,7 @@ def parse_args() -> argparse.Namespace:
 
 
 # ---------------------------------------------------------------------------
-# Main sweep
+# Main tuning loop
 # ---------------------------------------------------------------------------
 
 def run_trial(
@@ -236,7 +236,7 @@ def main() -> None:
     try:
         for arch in arches:
             grid = grids[arch]
-            print(f"\n===== {arch.upper()} sweep ({len(grid)} configs) =====")
+            print(f"\n===== {arch.upper()} hyperparameter tuning ({len(grid)} configs) =====")
             for i, config in enumerate(grid):
                 trial_name = f"{arch}_t{i:02d}"
                 trial_dir  = run_dir / trial_name
@@ -267,7 +267,7 @@ def main() -> None:
         summary_csv.close()
 
     # Per-arch ranking by best_val_total (lower = better).
-    print("\n===== Sweep summary (ranked by best_val_total) =====")
+    print("\n===== Hyperparameter tuning summary (ranked by best_val_total) =====")
     for arch in arches:
         rows = sorted(
             [r for r in all_results if r["arch"] == arch],
