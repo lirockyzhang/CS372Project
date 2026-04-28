@@ -1,0 +1,9 @@
+arch,trial,config,n_params,best_val_total,test_policy_loss,test_value_loss,test_total_loss,elapsed_s,trial_dir
+cnn,cnn_t00,"{'channels': 32, 'num_blocks': 3, 'lr': 0.001}",76090,2.07989,2.0665,0.537789,2.10883,9.13,runs\tune_100k\cnn_t00
+cnn,cnn_t01,"{'channels': 64, 'num_blocks': 3, 'lr': 0.001}",244250,1.87488,2.06046,0.425497,1.88122,16.48,runs\tune_100k\cnn_t01
+cnn,cnn_t02,"{'channels': 64, 'num_blocks': 6, 'lr': 0.001}",466202,1.84338,2.05414,0.395527,1.81812,30.03,runs\tune_100k\cnn_t02
+cnn,cnn_t03,"{'channels': 128, 'num_blocks': 3, 'lr': 0.0005}",912346,1.7329,2.07583,0.358712,1.75534,28.21,runs\tune_100k\cnn_t03
+transformer,transformer_t00,"{'embed_dim': 64, 'depth': 4, 'num_heads': 4, 'lr': 0.001}",210306,2.29649,2.00305,0.65707,2.31566,52.30,runs\tune_100k\transformer_t00
+transformer,transformer_t01,"{'embed_dim': 128, 'depth': 4, 'num_heads': 4, 'lr': 0.001}",822018,2.32549,2.00378,0.664607,2.3311,84.30,runs\tune_100k\transformer_t01
+transformer,transformer_t02,"{'embed_dim': 128, 'depth': 6, 'num_heads': 4, 'lr': 0.001}",1218562,2.31684,2.00403,0.66261,2.32723,123.70,runs\tune_100k\transformer_t02
+transformer,transformer_t03,"{'embed_dim': 192, 'depth': 4, 'num_heads': 6, 'lr': 0.0005}",1835138,2.29034,2.00337,0.656171,2.31403,160.39,runs\tune_100k\transformer_t03

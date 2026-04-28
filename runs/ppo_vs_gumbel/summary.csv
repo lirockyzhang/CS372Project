@@ -1,0 +1,2 @@
+agent_a,agent_b,games,wins_a,wins_b,draws,pts_a,pts_b,a_ms_per_move,b_ms_per_move,elapsed_s
+PPO(ppo),Gumbel-SelfPlay(iter_002_accepted),50,27,22,1,27.5,22.5,1.63,93.5,109.15

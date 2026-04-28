@@ -1,0 +1,3 @@
+run,first_forwards_to_thr,first_hours_to_thr,max_elo_vs_mcts,forwards_at_max,hours_at_max
+az_cnn_gumbel,inf,inf,1220.4119982655925,2040128.0,1.1011527777777779
+ppo_warm_matched,inf,inf,1220.4119982655925,5013504.0,0.8531638888888888

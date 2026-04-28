@@ -1,0 +1,139 @@
+Device: cuda
+Building 2 agents ...
+  ppo              -> PPO(ppo)
+  gumbel-selfplay  -> Gumbel-SelfPlay(iter_002_accepted)
+
+======================================================================
+  Pairwise tournament: 2 agents, 1 matches ¡Á 50 games
+  Temperature 0   paired openings   seed=42
+  Log dir: runs\ppo_vs_gumbel
+======================================================================
+
+----------------------------------------------------------------------
+  Match 1/1: PPO(ppo)  vs  Gumbel-SelfPlay(iter_002_accepted)
+----------------------------------------------------------------------
+  Game   Opening  X                                   O                                   Winner                              plies                              PPO(ppo) ms/mv    Gumbel-SelfPlay(iter_002_accepted) ms/mv
+  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     1     (1,5)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      5.3 ms                                     97.9 ms
+        running: PPO(ppo) 0-0-1 Gumbel-SelfPlay(iter_002_accepted)   (1/50)
+     2     (1,5)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      3.4 ms                                     91.4 ms
+        running: PPO(ppo) 0-0-2 Gumbel-SelfPlay(iter_002_accepted)   (2/50)
+     3     (0,3)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      2.7 ms                                     90.4 ms
+        running: PPO(ppo) 1-0-2 Gumbel-SelfPlay(iter_002_accepted)   (3/50)
+     4     (0,3)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      2.4 ms                                     89.6 ms
+        running: PPO(ppo) 2-0-2 Gumbel-SelfPlay(iter_002_accepted)   (4/50)
+     5     (3,8)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      2.3 ms                                     90.7 ms
+        running: PPO(ppo) 2-0-3 Gumbel-SelfPlay(iter_002_accepted)   (5/50)
+     6     (3,8)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      2.2 ms                                     91.4 ms
+        running: PPO(ppo) 2-0-4 Gumbel-SelfPlay(iter_002_accepted)   (6/50)
+     7     (3,4)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      2.1 ms                                     91.4 ms
+        running: PPO(ppo) 2-0-5 Gumbel-SelfPlay(iter_002_accepted)   (7/50)
+     8     (3,4)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      2.0 ms                                     91.8 ms
+        running: PPO(ppo) 2-0-6 Gumbel-SelfPlay(iter_002_accepted)   (8/50)
+     9     (3,1)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      2.0 ms                                     91.5 ms
+        running: PPO(ppo) 2-0-7 Gumbel-SelfPlay(iter_002_accepted)   (9/50)
+    10     (3,1)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      2.0 ms                                     91.9 ms
+        running: PPO(ppo) 3-0-7 Gumbel-SelfPlay(iter_002_accepted)   (10/50)
+    11     (1,8)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.9 ms                                     92.2 ms
+        running: PPO(ppo) 3-0-8 Gumbel-SelfPlay(iter_002_accepted)   (11/50)
+    12     (1,8)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.9 ms                                     92.4 ms
+        running: PPO(ppo) 4-0-8 Gumbel-SelfPlay(iter_002_accepted)   (12/50)
+    13     (1,4)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.9 ms                                     93.3 ms
+        running: PPO(ppo) 5-0-8 Gumbel-SelfPlay(iter_002_accepted)   (13/50)
+    14     (1,4)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.9 ms                                     93.7 ms
+        running: PPO(ppo) 6-0-8 Gumbel-SelfPlay(iter_002_accepted)   (14/50)
+    15     (7,6)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.9 ms                                     93.7 ms
+        running: PPO(ppo) 6-0-9 Gumbel-SelfPlay(iter_002_accepted)   (15/50)
+    16     (7,6)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.9 ms                                     93.4 ms
+        running: PPO(ppo) 7-0-9 Gumbel-SelfPlay(iter_002_accepted)   (16/50)
+    17     (1,2)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.9 ms                                     93.6 ms
+        running: PPO(ppo) 7-0-10 Gumbel-SelfPlay(iter_002_accepted)   (17/50)
+    18     (1,2)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.8 ms                                     93.5 ms
+        running: PPO(ppo) 8-0-10 Gumbel-SelfPlay(iter_002_accepted)   (18/50)
+    19     (8,3)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.8 ms                                     93.6 ms
+        running: PPO(ppo) 8-0-11 Gumbel-SelfPlay(iter_002_accepted)   (19/50)
+    20     (8,3)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      1.8 ms                                     94.1 ms
+        running: PPO(ppo) 8-0-12 Gumbel-SelfPlay(iter_002_accepted)   (20/50)
+    21     (6,0)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.8 ms                                     94.4 ms
+        running: PPO(ppo) 9-0-12 Gumbel-SelfPlay(iter_002_accepted)   (21/50)
+    22     (6,0)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.8 ms                                     94.5 ms
+        running: PPO(ppo) 10-0-12 Gumbel-SelfPlay(iter_002_accepted)   (22/50)
+    23     (0,4)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.8 ms                                     94.7 ms
+        running: PPO(ppo) 11-0-12 Gumbel-SelfPlay(iter_002_accepted)   (23/50)
+    24     (0,4)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      1.8 ms                                     94.7 ms
+        running: PPO(ppo) 11-0-13 Gumbel-SelfPlay(iter_002_accepted)   (24/50)
+    25     (0,3)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.8 ms                                     94.4 ms
+        running: PPO(ppo) 12-0-13 Gumbel-SelfPlay(iter_002_accepted)   (25/50)
+    26     (0,3)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.7 ms                                     94.2 ms
+        running: PPO(ppo) 13-0-13 Gumbel-SelfPlay(iter_002_accepted)   (26/50)
+    27     (1,2)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.7 ms                                     94.4 ms
+        running: PPO(ppo) 13-0-14 Gumbel-SelfPlay(iter_002_accepted)   (27/50)
+    28     (1,2)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.7 ms                                     94.6 ms
+        running: PPO(ppo) 14-0-14 Gumbel-SelfPlay(iter_002_accepted)   (28/50)
+    29     (3,0)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.7 ms                                     94.3 ms
+        running: PPO(ppo) 14-0-15 Gumbel-SelfPlay(iter_002_accepted)   (29/50)
+    30     (3,0)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.7 ms                                     94.0 ms
+        running: PPO(ppo) 15-0-15 Gumbel-SelfPlay(iter_002_accepted)   (30/50)
+    31     (3,2)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.7 ms                                     93.8 ms
+        running: PPO(ppo) 15-0-16 Gumbel-SelfPlay(iter_002_accepted)   (31/50)
+    32     (3,2)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.7 ms                                     93.5 ms
+        running: PPO(ppo) 16-0-16 Gumbel-SelfPlay(iter_002_accepted)   (32/50)
+    33     (7,1)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Draw                                    -                                      1.7 ms                                     93.3 ms
+        running: PPO(ppo) 16-1-16 Gumbel-SelfPlay(iter_002_accepted)   (33/50)
+    34     (7,1)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      1.7 ms                                     93.7 ms
+        running: PPO(ppo) 16-1-17 Gumbel-SelfPlay(iter_002_accepted)   (34/50)
+    35     (8,5)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.7 ms                                     93.6 ms
+        running: PPO(ppo) 17-1-17 Gumbel-SelfPlay(iter_002_accepted)   (35/50)
+    36     (8,5)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)      -                                      1.7 ms                                     93.6 ms
+        running: PPO(ppo) 17-1-18 Gumbel-SelfPlay(iter_002_accepted)   (36/50)
+    37     (0,3)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.7 ms                                     93.5 ms
+        running: PPO(ppo) 18-1-18 Gumbel-SelfPlay(iter_002_accepted)   (37/50)
+    38     (0,3)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.2 ms
+        running: PPO(ppo) 19-1-18 Gumbel-SelfPlay(iter_002_accepted)   (38/50)
+    39     (7,8)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.6 ms                                     93.3 ms
+        running: PPO(ppo) 19-1-19 Gumbel-SelfPlay(iter_002_accepted)   (39/50)
+    40     (7,8)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.2 ms
+        running: PPO(ppo) 20-1-19 Gumbel-SelfPlay(iter_002_accepted)   (40/50)
+    41     (2,7)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.7 ms                                     93.2 ms
+        running: PPO(ppo) 21-1-19 Gumbel-SelfPlay(iter_002_accepted)   (41/50)
+    42     (2,7)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.3 ms
+        running: PPO(ppo) 22-1-19 Gumbel-SelfPlay(iter_002_accepted)   (42/50)
+    43     (7,6)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.6 ms                                     93.4 ms
+        running: PPO(ppo) 22-1-20 Gumbel-SelfPlay(iter_002_accepted)   (43/50)
+    44     (7,6)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.4 ms
+        running: PPO(ppo) 23-1-20 Gumbel-SelfPlay(iter_002_accepted)   (44/50)
+    45     (5,8)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                                -                                      1.6 ms                                     93.5 ms
+        running: PPO(ppo) 24-1-20 Gumbel-SelfPlay(iter_002_accepted)   (45/50)
+    46     (5,8)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.6 ms
+        running: PPO(ppo) 25-1-20 Gumbel-SelfPlay(iter_002_accepted)   (46/50)
+    47     (3,1)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.6 ms                                     93.5 ms
+        running: PPO(ppo) 25-1-21 Gumbel-SelfPlay(iter_002_accepted)   (47/50)
+    48     (3,1)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.5 ms
+        running: PPO(ppo) 26-1-21 Gumbel-SelfPlay(iter_002_accepted)   (48/50)
+    49     (6,3)  PPO(ppo)                            Gumbel-SelfPlay(iter_002_accepted)  Gumbel-SelfPlay(iter_002_accepted)      -                                      1.6 ms                                     93.5 ms
+        running: PPO(ppo) 26-1-22 Gumbel-SelfPlay(iter_002_accepted)   (49/50)
+    50     (6,3)  Gumbel-SelfPlay(iter_002_accepted)  PPO(ppo)                            PPO(ppo)                                -                                      1.6 ms                                     93.5 ms
+        running: PPO(ppo) 27-1-22 Gumbel-SelfPlay(iter_002_accepted)   (50/50)
+
+==========================================================================================================================
+  MATCH SUMMARY
+==========================================================================================================================
+  Agent                                    W     D     L     Pts    Win%   Moves   Avg ms/mv
+  ------------------------------------  ----  ----  ----  ------  ------  ------  ----------
+  PPO(ppo)                                27     1    22    27.5   55.0%    1150        1.63
+  Gumbel-SelfPlay(iter_002_accepted)      22     1    27    22.5   45.0%    1147       93.50
+  Games: 50   Draws: 1   Wall time: 1.82 min (0.46 g/s)
+==========================================================================================================================
+  CSV log written to runs\ppo_vs_gumbel\ppo_vs_gumbel-selfplay.csv
+
+==========================================================================================================
+  STANDINGS
+==========================================================================================================
+   #  Agent                                    Pts     W     D     L  Matches    Moves   Avg ms/mv
+  --  ------------------------------------  ------  ----  ----  ----  -------  -------  ----------
+   1  PPO(ppo)                                27.5    27     1    22        1     1150        1.63
+   2  Gumbel-SelfPlay(iter_002_accepted)      22.5    22     1    27        1     1147       93.50
+==========================================================================================================
+
+  Tournament complete in 1.82 min (50 games total)
+  Tournament summary CSV -> runs\ppo_vs_gumbel\summary.csv

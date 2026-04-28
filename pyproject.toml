@@ -1,0 +1,39 @@
+[project]
+name = "CS372Project"
+version = "0.1.0"
+description = "RL-based Ultimate Tic-Tac-Toe agents: PPO, MCTS, AlphaZero (CNN & Transformer)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy>=2.0",
+    "torch>=2.0",
+    "tqdm>=4.0",
+    "tensorboard>=2.13",
+    "numba>=0.59", # required by the CUDA MCTS backend (agents/mcts_cuda)
+    "numba-cuda>=0.30.0",
+    "matplotlib>=3.10.9",
+    "pandas>=3.0.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+web = ["fastapi>=0.110", "uvicorn[standard]>=0.27"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]

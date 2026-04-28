@@ -1,0 +1,14 @@
+run,kind,label,checkpoint,cumulative_nn_forwards,cumulative_time_s,win_rate_mcts,n_games,mcts_sims,az_sims,eval_time_s
+warm_start,az-gumbel,cnn_c128b3_100k_reg_best,models\alphazero\cnn_c128b3_100k_reg_best.pt,0,0.0,0.06666666666666667,30,200,64,97.2059805393219
+warm_start,ppo,cnn_c128b3_100k_reg_best,models\alphazero\cnn_c128b3_100k_reg_best.pt,0,0.0,0.06666666666666667,30,200,64,20.88475227355957
+az_cnn_gumbel,az-gumbel,iter_001_rejected,runs\az_cnn_gumbel\iter_001_rejected.pt,1022528,1947.93,0.06666666666666667,30,200,64,91.12055683135986
+az_cnn_gumbel,az-gumbel,iter_002_accepted,runs\az_cnn_gumbel\iter_002_accepted.pt,2040128,3964.15,0.16666666666666666,30,200,64,78.19316124916077
+az_cnn_gumbel,az-gumbel,iter_003_rejected,runs\az_cnn_gumbel\iter_003_rejected.pt,3033600,5979.78,0.1,30,200,64,86.59987258911133
+az_cnn_gumbel,az-gumbel,iter_004_rejected,runs\az_cnn_gumbel\iter_004_rejected.pt,4021696,7723.03,0.13333333333333333,30,200,64,114.30005526542664
+az_cnn_gumbel,az-gumbel,iter_005_rejected,runs\az_cnn_gumbel\iter_005_rejected.pt,5007552,9889.87,0.13333333333333333,30,200,64,76.38229608535767
+ppo_warm_matched,ppo,ppo_30,runs\ppo_warm_matched\ppo_30.pt,983040,565.929,0.13333333333333333,30,200,64,18.990641117095947
+ppo_warm_matched,ppo,ppo_60,runs\ppo_warm_matched\ppo_60.pt,1966080,1197.22,0.1,30,200,64,19.167924880981445
+ppo_warm_matched,ppo,ppo_90,runs\ppo_warm_matched\ppo_90.pt,2949120,1800.9,0.03333333333333333,30,200,64,25.39704942703247
+ppo_warm_matched,ppo,ppo_120,runs\ppo_warm_matched\ppo_120.pt,3932160,2441.77,0.13333333333333333,30,200,64,27.485715866088867
+ppo_warm_matched,ppo,ppo_150,runs\ppo_warm_matched\ppo_150.pt,4915200,3013.86,0.13333333333333333,30,200,64,28.023442029953003
+ppo_warm_matched,ppo,ppo,runs\ppo_warm_matched\ppo.pt,5013504,3071.39,0.16666666666666666,30,200,64,27.722131967544556

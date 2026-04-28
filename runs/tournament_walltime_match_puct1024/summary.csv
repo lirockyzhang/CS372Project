@@ -1,0 +1,2 @@
+agent_a,agent_b,games,wins_a,wins_b,draws,pts_a,pts_b,a_ms_per_move,b_ms_per_move,elapsed_s
+PUCT@1024(cnn_c128b3_100k_reg_best),Gumbel@64(cnn_c128b3_100k_reg_best),20,5,12,3,6.5,13.5,123.93,127.42,128.58
